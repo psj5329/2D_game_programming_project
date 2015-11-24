@@ -2,30 +2,39 @@ __author__ = 'SooJeong'
 
 
 import random
+from background import Grass
 from pico2d import *
 
 running = None
 
-class Grass:
-    global grass_num
-
-    def __init__(self):
-        self.x = 400
-        self.s = 1
-        self.map = 0
-        self.image = load_image('grass.png')
-
-    def draw(self):
-        self.image.clip_draw(0, 0, 800, 100, self.x, 50)
-
-        if self.x == 0:
-            self.x = 800
-            self.map += 1
-            if self.map % 2 == 0:
-                self.s += 1
-            self.x -= 10 * self.s
-        elif self.x > 0:
-            self.x -= 10 * self.s
+# class Grass:
+#     global grass_num
+#
+#     def __init__(self):
+#         self.x = 400
+#         self.s = 1
+#         self.map = 0
+#         self.image = load_image('grass.png')
+#
+#     def draw(self):
+#         # self.image.clip_draw(0, 0, 800, 100, self.x, 50)
+#         #
+#         # if self.x == 0:
+#         #     self.x = 800
+#         #     self.map += 1
+#         #     if self.map % 2 == 0:
+#         #         self.s += 1
+#         #     self.x -= 10 * self.s
+#         # elif self.x > 0:
+#         #     self.x -= 10 * self.s
+#
+#         x = int(self.left)
+#         w = min(self.image.w - x, self.screen_width)
+#         self.image.clip_draw_to_origin(x, 0, w, self.screen_height, 0, 0)
+#         self.image.clip_draw_to_origin(0, 0, self.screed_width - w, self.screen_height, w, 0)
+#
+#     def update(self, frame_time):
+#         self.left = (self.left + frame_time * self.speed) % self.image.w
 
 
 class Life:

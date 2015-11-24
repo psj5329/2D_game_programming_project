@@ -1,5 +1,3 @@
-__author__ = 'SooJeong'
-
 class GameState:
     def __init__(self, state):
         self.enter = state.enter
