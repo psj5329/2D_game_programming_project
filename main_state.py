@@ -3,56 +3,46 @@ __author__ = 'SooJeong'
 
 import random
 from background import Grass
+from background import Background
 from pico2d import *
 
 running = None
-
-# class Grass:
-#     global grass_num
-#
-#     def __init__(self):
-#         self.x = 400
-#         self.s = 1
-#         self.map = 0
-#         self.image = load_image('grass.png')
-#
-#     def draw(self):
-#         # self.image.clip_draw(0, 0, 800, 100, self.x, 50)
-#         #
-#         # if self.x == 0:
-#         #     self.x = 800
-#         #     self.map += 1
-#         #     if self.map % 2 == 0:
-#         #         self.s += 1
-#         #     self.x -= 10 * self.s
-#         # elif self.x > 0:
-#         #     self.x -= 10 * self.s
-#
-#         x = int(self.left)
-#         w = min(self.image.w - x, self.screen_width)
-#         self.image.clip_draw_to_origin(x, 0, w, self.screen_height, 0, 0)
-#         self.image.clip_draw_to_origin(0, 0, self.screed_width - w, self.screen_height, w, 0)
-#
-#     def update(self, frame_time):
-#         self.left = (self.left + frame_time * self.speed) % self.image.w
+boy = None
+grass = None
+background = None
+life = None
 
 
 class Life:
+    image = None
+
     def __init__(self):
-        pass
+        self.x, self.y = 80, 560
+        if Life.image == None:
+            Life.image = load_image('life_1.png')
+
+    def draw(self):
+        self.image.clip_draw(100, 100, 100, 100, self.x, self.y)
+
+class Dead:
+    image = None
+
+    def __init__(self):
+        self.x, self.y = 50, 75
+        if Dead.image == None:
+            Dead.image = load_image('life_2.png')
+
+    def draw(self):
+        self.image.draw(81, 561)
+
 
 
 
 class Boy:
     image = None
 
-    run, slide = 0, 1
+    RUN, JUMP = 0, 1
 
-    def run(self):
-        self.run_frames += 1
-
-    def slide(self):
-        pass
 
 
     def __init__(self):
@@ -63,14 +53,28 @@ class Boy:
             Boy.image = load_image('animation_sheet.png')
 
     def handle_event(self, event):
-        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_LEFT):
-            pass# if self.
+        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_UP):
+            if self.state == self.RUN:
+                self.state = self.JUMP
 
     def draw(self):
         self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y)
 
+    def run(self):
+        self.run_frames += 1
+
+    def slide(self):
+        pass
+
     def update(self):
         self.frame = (self.frame + 1) % 8
+        if self.state == self.JUMP:
+            if self.y == 130:
+                while self.y == 230:
+                    self.y += 20
+            if self.y == 230:
+                while self.y == 130:
+                    self.y -= 20
 
 
 
@@ -94,10 +98,15 @@ def handle_events():
 def main():
 
     open_canvas()
-    boy = Boy()
-    grass = Grass(600)
 
     global running
+
+    boy = Boy()
+    grass = Grass(800, 100)
+    background = Background(800, 600)
+    life = Life()
+    dead = Dead()
+
     running = True
     while running:
         handle_events()
@@ -105,7 +114,10 @@ def main():
         boy.update()
 
         clear_canvas()
+        background.draw()
         grass.draw()
+        dead.draw()
+        life.draw()
         boy.draw()
         update_canvas()
 
