@@ -8,6 +8,7 @@ import game_framework
 from main_state import Boy
 from background import Background
 from background import Grass
+from life import Life
 
 
 name = "scroll_state"
@@ -15,19 +16,22 @@ name = "scroll_state"
 boy = None
 background = None
 grass = None
+life = None
 
 def create_world():
-    global boy, background
+    global boy, background, grass, life
     boy = Boy()
     background = Background(800, 600)
     grass = Grass(800, 100)
+    life = Life()
 
 
 def destroy_world():
-    global boy, background, grass
+    global boy, background, grass, life
     del(boy)
     del(background)
     del(grass)
+    del(life)
 
 def enter():
     open_canvas(800, 600)
@@ -47,7 +51,7 @@ def resume():
     pass
 
 
-def handle_events(frame_time):
+def handle_events(frame_time): #frame_time
     events = get_events()
     for event in events:
         if event.type == SDL_QUIT:
@@ -61,16 +65,18 @@ def handle_events(frame_time):
 
 
 
-def update(frame_time):
-    boy.update(frame_time)
-    background.update(frame_time)
-    grass.update(frame_time)
+def update():
+    boy.update()
+    background.update()
+    grass.update()
+    life.update()
 
 
 
-def draw(frame_time):
+def draw():
     clear_canvas()
     background.draw()
-    boy.draw()
     grass.draw()
+    boy.draw()
+    life.draw()
     update_canvas()

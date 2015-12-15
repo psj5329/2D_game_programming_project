@@ -1,3 +1,6 @@
+import time
+
+
 class GameState:
     def __init__(self, state):
         self.enter = state.enter
@@ -28,13 +31,13 @@ class TestGameState:
         print("State [%s] Resumed" % self.name)
 
     def handle_events(self):
-        print("State [%s] handle_events" % self.name)
+        print("State [%s] handle_events(%f)" % (self.name))
 
     def update(self):
-        print("State [%s] update" % self.name)
+        print("State [%s] update(%f)" % (self.name))
 
     def draw(self):
-        print("State [%s] draw" % self.name)
+        print("State [%s] draw(%f)" % (self.name))
 
 
 
@@ -84,6 +87,7 @@ def run(start_state):
     stack = [start_state]
     start_state.enter()
     while (running):
+
         stack[-1].handle_events()
         stack[-1].update()
         stack[-1].draw()
@@ -92,6 +96,10 @@ def run(start_state):
         stack[-1].exit()
         stack.pop()
 
+
+def reset_time():
+    global current_time
+    current_time = time.clock()
 
 def test_game_framework():
     start_state = TestGameState('StartState')

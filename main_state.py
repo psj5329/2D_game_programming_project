@@ -1,130 +1,112 @@
 __author__ = 'SooJeong'
 
+from pico2d import *
+import game_framework
 
-import random
 from background import Grass
 from background import Background
-from pico2d import *
+from boy import Boy
+from life import Life
+from life import Dead
+from background import UpObject
+
+name = "main_state"
 
 running = None
 boy = None
 grass = None
 background = None
 life = None
+dead = None
+upobject = None
 
 
-class Life:
-    image = None
-
-    def __init__(self):
-        self.x, self.y = 80, 560
-        if Life.image == None:
-            Life.image = load_image('life_1.png')
-
-    def draw(self):
-        self.image.clip_draw(100, 100, 100, 100, self.x, self.y)
-
-class Dead:
-    image = None
-
-    def __init__(self):
-        self.x, self.y = 50, 75
-        if Dead.image == None:
-            Dead.image = load_image('life_2.png')
-
-    def draw(self):
-        self.image.draw(81, 561)
-
-
-
-
-class Boy:
-    image = None
-
-    RUN, JUMP = 0, 1
-
-
-
-    def __init__(self):
-        self.x, self.y = 100, 130
-        self.state = self.run
-        self.frame = random.randint(0, 7)
-        if Boy.image == None:
-            Boy.image = load_image('animation_sheet.png')
-
-    def handle_event(self, event):
-        if (event.type, event.key) == (SDL_KEYDOWN, SDLK_UP):
-            if self.state == self.RUN:
-                self.state = self.JUMP
-
-    def draw(self):
-        self.image.clip_draw(self.frame * 100, 100, 100, 100, self.x, self.y)
-
-    def run(self):
-        self.run_frames += 1
-
-    def slide(self):
-        pass
-
-    def update(self):
-        self.frame = (self.frame + 1) % 8
-        if self.state == self.JUMP:
-            if self.y == 130:
-                while self.y == 230:
-                    self.y += 20
-            if self.y == 230:
-                while self.y == 130:
-                    self.y -= 20
-
-
-
-
-
-def handle_events():
-    global running
-    global boy
-    events = get_events()
-    for event in events:
-        if event.type == SDL_QUIT:
-            running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
-            running = False
-        # else:
-        #     boy.handle_event(event)
-
-
-
-
-def main():
-
-    open_canvas()
-
-    global running
+def create_world():
+    global boy, grass, background, life, dead, upobject
 
     boy = Boy()
     grass = Grass(800, 100)
     background = Background(800, 600)
     life = Life()
     dead = Dead()
+    upobject = UpObject()
 
-    running = True
-    while running:
-        handle_events()
 
-        boy.update()
+def destroy_world():
+    global boy, grass, background, life, dead, upobject
 
-        clear_canvas()
-        background.draw()
-        grass.draw()
-        dead.draw()
-        life.draw()
-        boy.draw()
-        update_canvas()
+    del(boy)
+    del(grass)
+    del(background)
+    del(life)
+    del(dead)
+    del(upobject)
 
-        delay(0.05)
 
+
+def enter():
+    open_canvas()
+    hide_cursor()
+    game_framework.reset_time()
+    create_world()
+
+
+def exit():
+    destroy_world()
     close_canvas()
 
 
-if __name__ == '__main__':
-    main()
+def pause():
+    pass
+
+
+def resume():
+    pass
+
+
+def handle_events():
+    events = get_events()
+    for event in events:
+        if event.type == SDL_QUIT:
+            game_framework.quit()
+        elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
+            game_framework.quit()
+        else:
+            boy.handle_event(event)
+
+
+def collide(a, b):
+    left_a, bottom_a, right_a, top_a = a.get_bb()
+    left_b, bottom_b, right_b, top_b = b.get_bb()
+
+    if left_a > right_b : return False
+    if right_a < left_b : return False
+    if top_a < bottom_b : return False
+    if bottom_a > top_b : return False
+
+    return True
+
+def update():
+    boy.update()
+    grass.update()
+    background.update()
+    upobject.update()
+    life.update()
+    dead.update()
+
+    if collide(boy, upobject):
+        print("collision")
+
+def draw():
+    clear_canvas()
+    background.draw()
+    upobject.draw()
+    dead.draw()
+    life.draw()
+    grass.draw()
+    boy.draw()
+    boy.draw_bb()
+    upobject.draw_bb()
+
+    update_canvas()
+
